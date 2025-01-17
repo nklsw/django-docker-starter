@@ -36,8 +36,8 @@ jobs:
       - uses: "actions/checkout@v4"
 
       - name: Prepare environment
-        run: cp --no-clobber .env.example .env
-
+        run: cp --no-clobber .env.example .env && source .env
+      
       - name: Build Docker containers
         run: docker compose build
 
