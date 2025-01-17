@@ -21,6 +21,8 @@ x-app: &default-app
           path: ./pyproject.toml
         - action: rebuild
           path: ./uv.lock
+  env_file:
+    - ".env"
 
 services:
   app:
