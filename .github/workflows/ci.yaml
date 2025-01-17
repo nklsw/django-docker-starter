@@ -1,0 +1,56 @@
+name: "CI"
+
+on:
+  pull_request:
+    branches:
+      - "*"
+  push:
+    branches:
+      - "main"
+
+concurrency:
+  group:
+    ${{ github.workflow }}-${{ github.ref_name }}-${{
+    github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v4"
+
+      - uses: astral-sh/ruff-action@v3
+      - run: ruff check
+      - run: ruff format --check
+
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+  
+  test:
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v4"
+
+      - name: Prepare environment
+        run: cp --no-clobber .env.example .env
+
+      - name: Build Docker containers
+        run: docker compose build
+
+      - name: Start Docker containers
+        run: docker compose up -d
+      
+      - name: Run tests
+        run: docker compose exec app pytest --ds=config.settings.test
+
+      - name: Show Docker logs on failure
+        if: failure()
+        run: docker compose logs
+
+      - name: Clean up
+        if: always()
+        run: docker compose down -v

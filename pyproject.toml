@@ -1,0 +1,32 @@
+[project]
+name = "django-docker-starter"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13, <4"
+dependencies = [
+    "django>=5.1.4",
+    "django-environ>=0.11.2",
+    "granian>=1.7.4",
+    "psycopg[binary]>=3.2.3",
+    "whitenoise>=6.8.2",
+]
+
+[dependency-groups]
+dev = ["django-debug-toolbar>=4.4.6", "granian[reload]>=1.7.4", "ruff>=0.9.1"]
+test = ["pytest-django>=4.9.0"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+
+[tool.ruff]
+include = ["src/**.py"]
+extend-exclude = ["migrations", "static"]
+
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["D100", "D101", "D103", "D104", "D203", "D212", "COM812"]
+
+[tool.ruff.lint.per-file-ignores]
+"*/tests/**.py" = ["S101"]
